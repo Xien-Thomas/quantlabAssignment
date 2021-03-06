@@ -12,17 +12,18 @@ void updateTotalVolume(string, string, map<string, vector<int>> &m);
 void updateMaxPrice(string, string, map<string, vector<int>> &m);
 void updateWeightedAverage(string, map<string, vector<int>> &m);
 void outputCSV(vector<string>, map<string, vector<int>> &m);
-//map data structure
-//Each Key: (Vector)
-//          previoustime(0), currentGap(1), volumeSum(2), currentVolume(3), maxPrice(4), currentPrice(5),  rollingTrades(6), weightedAverage(7)
+
 int main()
 {
+
+    //Map data structure
+    //Each symbol has a: (Vector) which contains
+    //          previoustime(0), currentGap(1), volumeSum(2), currentVolume(3), maxPrice(4), currentPrice(5),  rollingTrades(6), weightedAverage(7)
     map<string, vector<int>> m;
     //input file
     ifstream file("input.csv");
 
     string line;
-    vector<string> input;
     vector<string> symbolInput;
     int maxGap = 0;
     int totalVolume = 0, maxPrice = 0, wAvg = 0;
@@ -30,7 +31,6 @@ int main()
     while (getline(file, line))
     {
         vector<int> mapInput;
-        input.push_back(line);
 
         int pos1 = line.find(',') + 1;
         int pos2 = line.find(',', pos1);
@@ -49,6 +49,7 @@ int main()
         updateWeightedAverage(symbol, m);
     }
 
+    //sort symbols
     sort(symbolInput.begin(), symbolInput.end());
 
     outputCSV(symbolInput, m);
@@ -120,10 +121,12 @@ void updateMaxPrice(string input, string symbolInput, map<string, vector<int>> &
     }
     else
     {
+        //get max price
         if (m[symbolInput][4] < price)
         {
             m[symbolInput][4] = price;
         }
+        //get current price
         m[symbolInput][5] = price;
     }
 }
@@ -137,11 +140,13 @@ void updateWeightedAverage(string symbolInput, map<string, vector<int>> &m)
     //Roling trade
     if (m[symbolInput].size() < 7)
     {
+        //emptylog (init)
         m[symbolInput].push_back(pricePerVol);
         m[symbolInput].push_back(totalVolume);
     }
     else
     {
+        //numerator
         m[symbolInput][6] = m[symbolInput][6] + pricePerVol;
         //Weighted Average
         m[symbolInput][7] = m[symbolInput][6] / totalVolume;
@@ -149,8 +154,11 @@ void updateWeightedAverage(string symbolInput, map<string, vector<int>> &m)
 }
 void outputCSV(vector<string> symbol, map<string, vector<int>> &m)
 {
+    //open file
     ofstream newFile;
     newFile.open("output.csv");
+
+    //enter contents into csv file
     for (int i = 0; i < symbol.size(); i++)
     {
         newFile << symbol[i];
